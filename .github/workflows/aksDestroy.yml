@@ -29,6 +29,14 @@ jobs:
     - name: Terraform Init
       working-directory: aks
       run: terraform init
+      
+    - name: Terraform Format
+      working-directory: aks
+      run: terraform fmt
+
+    - name: Terraform Plan
+      working-directory: aks
+      run: terraform plan
     
     - name: Terraform Destroy
       working-directory: aks
