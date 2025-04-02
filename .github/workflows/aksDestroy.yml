@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   terraform:
@@ -28,7 +28,20 @@ jobs:
     - name: Terraform Init
       working-directory: aks
       run: terraform init
-    
+
+    - name: Pull Latest Terraform State
+      run: |
+        git pull origin main
+
     - name: Terraform Destroy
       working-directory: aks
       run: terraform destroy -auto-approve
+
+
+    - name: Commit and Push Updated Terraform State
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git add aks/terraform.tfstate
+        git commit -m "Update Terraform state after destroy"
+        git push
