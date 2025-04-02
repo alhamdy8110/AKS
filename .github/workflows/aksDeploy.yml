@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   terraform:
@@ -38,3 +38,11 @@ jobs:
     - name: Terraform Apply
       working-directory: aks
       run: terraform apply -auto-approve
+
+    - name: Commit and Push Terraform State
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git add aks/terraform.tfstate
+        git commit -m "Update Terraform state"
+        git push
