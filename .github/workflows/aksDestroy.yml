@@ -17,9 +17,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
+
 
     steps:
     - name: Checkout
