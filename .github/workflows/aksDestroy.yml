@@ -32,4 +32,10 @@ jobs:
     
     - name: Terraform Destroy
       working-directory: aks
-      run: terraform destroy -auto-approve
+      run: |
+        terraform destroy -auto-approve -input=false
+        if [ $? -ne 0 ]; then
+          echo "Terraform destroy failed, attempting state cleanup..."
+          terraform state list | xargs -I{} terraform state rm '{}'
+          exit 1
+        fi
