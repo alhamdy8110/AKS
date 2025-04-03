@@ -53,8 +53,8 @@ jobs:
       with:
         manifests: |
           k8s/nginx-deployment.yml
- #         k8s/nginx-service.yml
-        images: |
-          nginx:latest
+#         k8s/nginx-service.yml
+#      images: |
+#          nginx:latest
         namespace: default
         traffic-split-method: pod
