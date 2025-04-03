@@ -11,7 +11,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   location            = azurerm_resource_group.rg.location
   name                = var.aksname
   resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = "${var.aksname}-dns"
+  #dns_prefix          = "${var.aksname}-dns"
 
   identity {
     type = "SystemAssigned"
@@ -19,7 +19,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
   default_node_pool {
     name       = "agentpool"
-    vm_size    = "Standard_D2_v2"
+    vm_size    = "Standard_B1s"
     node_count = var.node_count
   }
   linux_profile {
@@ -31,6 +31,6 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   }
   network_profile {
     network_plugin    = "kubenet"
-    load_balancer_sku = "standard"
+    #load_balancer_sku = "standard"
   }
 }
