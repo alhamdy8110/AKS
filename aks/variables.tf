@@ -11,7 +11,7 @@ variable "resource_group_name" {
 }
 variable "aksname" {
   type = string
-  default = "aks_cluster"
+  default = "aks-cluster"
 }
 
 variable "node_count" {
