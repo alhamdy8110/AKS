@@ -34,6 +34,6 @@ variable "username" {
 
 variable "resource_storage_file_name" {
   type        = string
-  default     = "azurefile"
+  default     = "azurefileaks"
   description = "Prefix of the storga file name ."
 }
