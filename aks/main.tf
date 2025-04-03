@@ -59,5 +59,5 @@ resource "kubernetes_storage_class" "azurefile" {
     skuName = "Standard_LRS"  # Options: Standard_LRS, Standard_GRS, Standard_ZRS, Premium_LRS
   }
 
-  depends_on = [azurerm_kubernetes_cluster.k8s]
+  depends_on = [azurerm_kubernetes_cluster.k8s, azurerm_kubernetes_cluster_node_pool]
 }

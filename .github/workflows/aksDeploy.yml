@@ -39,10 +39,16 @@ jobs:
       working-directory: aks
       run: terraform apply -auto-approve
 
-    - name: Commit and Push Terraform State
-      run: |
-        git config --global user.email "github-actions@github.com"
-        git config --global user.name "GitHub Actions"
-        git add aks/terraform.tfstate
-        git commit -m "Update Terraform state"
-        git push
+    # - name: Commit and Push Terraform State
+    #   run: |
+    #     git config --global user.email "github-actions@github.com"
+    #     git config --global user.name "GitHub Actions"
+    #     git add aks/terraform.tfstate
+    #     git commit -m "Update Terraform state"
+    #     git push
+
+    - name: Upload tfstate
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-state
+        path: aks/terraform.tfstate
