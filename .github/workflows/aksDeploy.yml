@@ -48,7 +48,7 @@ jobs:
     #     git push
 
     - name: Upload tfstate
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
         name: terraform-state
         path: aks/terraform.tfstate
