@@ -31,3 +31,9 @@ variable "username" {
   description = "The admin username for the new cluster."
   default     = "azureadmin"
 }
+
+variable "resource_storage_file_name" {
+  type        = string
+  default     = "azurefile"
+  description = "Prefix of the storga file name ."
+}

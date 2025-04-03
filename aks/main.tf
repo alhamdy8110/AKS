@@ -45,3 +45,19 @@ resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
   vm_size               = "Standard_B1s" 
   node_count            = 1
 }
+
+resource "kubernetes_storage_class" "azurefile" {
+  metadata {
+    name = var.resource_storage_file_name
+  }
+
+  storage_provisioner = "file.csi.azure.com"
+  reclaim_policy     = "Delete"  # Or "Retain" if you want to keep storage after PVC deletion
+  volume_binding_mode = "Immediate"
+
+  parameters = {
+    skuName = "Standard_LRS"  # Options: Standard_LRS, Standard_GRS, Standard_ZRS, Premium_LRS
+  }
+
+  depends_on = [azurerm_kubernetes_cluster.k8s]
+}
