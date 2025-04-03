@@ -19,9 +19,13 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
   default_node_pool {
     name       = "agentpool"
-    vm_size    = "Standard_B1s"
+    vm_size    = "Standard_B2s"
     node_count = var.node_count
+
+
   }
+
+  
   linux_profile {
     admin_username = var.username
 
@@ -33,4 +37,11 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     network_plugin    = "kubenet"
     #load_balancer_sku = "standard"
   }
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
+  name                  = "userpool"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.k8s.id
+  vm_size               = "Standard_B1s" 
+  node_count            = 1
 }
