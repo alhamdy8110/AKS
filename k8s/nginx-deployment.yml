@@ -38,17 +38,4 @@ spec:
       port: 80
       targetPort: 80
   type: LoadBalancer
----
-# nginx-pvc.yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: nginx-html-pvc
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: azurefileaks # This uses Azure Files
 

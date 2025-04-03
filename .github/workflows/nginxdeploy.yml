@@ -52,6 +52,8 @@ jobs:
       uses: azure/k8s-deploy@v3
       with:
         manifests: |
+          k8s/azure-file-sc.yml
+          k8s/azure-file-pvc.yml
           k8s/nginx-deployment.yml
 #         k8s/nginx-service.yml
 #      images: |
