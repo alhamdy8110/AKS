@@ -45,6 +45,11 @@ jobs:
     #     git add aks/terraform.tfstate
     #     git commit -m "Update Terraform state after destroy"
     #     git push
+
+    - name: List downloaded files
+      run: ls -la aks
+
+      
     - name: Download tfstate
       uses: actions/download-artifact@v4
       with:
