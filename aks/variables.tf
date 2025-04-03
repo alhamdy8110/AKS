@@ -4,16 +4,20 @@ variable "resource_group_location" {
   description = "Location of the resource group."
 }
 
-variable "resource_group_name_prefix" {
+variable "resource_group_name" {
   type        = string
-  default     = "rg"
+  default     = "rg-aks"
   description = "Prefix of the resource group name that's combined with a random ID so name is unique in your Azure subscription."
+}
+variable "aksname" {
+  type = string
+  default = "aks_cluster"
 }
 
 variable "node_count" {
   type        = number
   description = "The initial quantity of nodes for the node pool."
-  default     = 1
+  default     = 2
 }
 
 variable "msi_id" {
