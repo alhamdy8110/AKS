@@ -46,6 +46,12 @@ resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
   node_count            = 1
 }
 
+provider "kubernetes" {
+  host                   = azurerm_kubernetes_cluster.k8s.kube_config.0.host
+  cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.cluster_ca_certificate)
+  token                  = azurerm_kubernetes_cluster.k8s.kube_config.0.access_token
+}
+
 resource "kubernetes_storage_class" "azurefile" {
   metadata {
     name = var.resource_storage_file_name
