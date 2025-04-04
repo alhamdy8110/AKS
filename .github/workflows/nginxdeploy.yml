@@ -64,6 +64,33 @@ jobs:
        admin: 'false'
        use-kubelogin: 'true' 
 
+    - name: Install Helm
+      uses: azure/setup-helm@v3
+
+    - name: Add Ingress-nginx Helm repo
+      run: |
+        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+        helm repo update     
+      
+    - name: Add the Jetstack Helm repository
+      run: |
+        helm repo add jetstack https://charts.jetstack.io --force-update
+        helm repo update 
+        kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.0/cert-manager.crds.yaml
+
+    - name: Install NGINX Ingress Controller & cert-manager
+      run: |
+        helm install ingress-nginx ingress-nginx/ingress-nginx \
+          --create-namespace \
+          --namespace ingress-basic \
+          --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz \
+          --set controller.service.externalTrafficPolicy=Local
+        helm install cert-manager jetstack/cert-manager \
+        --version v1.17.0 \
+        --set crds.enabled=true
+          
+
+
     - name: Deploy to AKS
       uses: azure/k8s-deploy@v3
       with:
@@ -71,6 +98,5 @@ jobs:
           k8s/azure-file-sc.yml
           k8s/azure-file-pvc.yml
           k8s/nginx-deployment.yml
+          k8s/ingress.yml
 #         k8s/nginx-service.yml
-#      images: |
-#          nginx:latest
