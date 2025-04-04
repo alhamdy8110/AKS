@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: abdulnaser93/my-nginx:latest
+        image: acr-akscluster.azurecr.io/abdulnaser93/my-nginx:latest
         ports:
         - containerPort: 80
         - containerPort: 443
@@ -41,5 +41,5 @@ spec:
     - protocol: TCP
       port: 443
       targetPort: 443
-  type: LoadBalancer
+  type: ClusterIP
 

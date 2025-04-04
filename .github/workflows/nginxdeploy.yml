@@ -12,6 +12,8 @@ permissions:
 env:
    RESOURCE_GROUP: rg-aks
    AKS_CLUSTER_NAME: aks-cluster
+   ACR_NAME: acr-akscluster
+
 
 jobs:
   deploy:
@@ -28,6 +30,19 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
         enable-AzPSSession: true
+
+    - name: Login to ACR
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.ACR_NAME }}.azurecr.io
+        username: ${{ secrets.AZURE_CLIENT_ID }} 
+        password: ${{ secrets.AZURE_CLIENT_SECRET }} 
+
+    - name: Build and push to ACR
+      run: |
+        docker pull abdulnaser93/my-nginx:latest
+        docker push ${{ env.ACR_NAME }}.azurecr.io
+
 
     - name: Set up Kubernetes tools
       uses: azure/setup-kubectl@v3
@@ -58,5 +73,3 @@ jobs:
 #         k8s/nginx-service.yml
 #      images: |
 #          nginx:latest
-        namespace: default
-        traffic-split-method: pod

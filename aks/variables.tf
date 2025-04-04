@@ -37,3 +37,8 @@ variable "resource_storage_file_name" {
   default     = "azurefileaks"
   description = "Prefix of the storga file name ."
 }
+
+variable "acrname" {
+  type = string
+  default = "acr-akscluster"
+}
