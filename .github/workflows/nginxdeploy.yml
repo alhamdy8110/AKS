@@ -31,6 +31,10 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
         enable-AzPSSession: true
 
+    - name: Attach ACR to AKS
+      run: |
+        az aks update -n ${{ env.AKS_CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --attach-acr ${{ env.ACR_NAME }}
+  
     - name: Login to ACR
       uses: azure/docker-login@v1
       with:
