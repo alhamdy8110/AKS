@@ -99,4 +99,5 @@ jobs:
           k8s/azure-file-pvc.yml
           k8s/nginx-deployment.yml
           k8s/ingress.yml
+          k8s/issuer.yml
 #         k8s/nginx-service.yml
