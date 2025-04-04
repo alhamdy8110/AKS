@@ -31,16 +31,16 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
         enable-AzPSSession: true
 
-    - name: Grant AKS access to ACR
-      run: |
-        AKS_CLIENT_ID=$(az aks show --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} --query "identityProfile.kubeletidentity.clientId" -o tsv)
-        ACR_ID=$(az acr show --name ${{ env.ACR_NAME }} --query id -o tsv)
+    # - name: Grant AKS access to ACR
+    #   run: |
+    #     AKS_CLIENT_ID=$(az aks show --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} --query "identityProfile.kubeletidentity.clientId" -o tsv)
+    #     ACR_ID=$(az acr show --name ${{ env.ACR_NAME }} --query id -o tsv)
 
-        echo "Granting AcrPull role to AKS kubelet identity..."
-        az role assignment create \
-          --assignee $AKS_CLIENT_ID \
-          --role "AcrPull" \
-          --scope $ACR_ID
+    #     echo "Granting AcrPull role to AKS kubelet identity..."
+    #     az role assignment create \
+    #       --assignee $AKS_CLIENT_ID \
+    #       --role "AcrPull" \
+    #       --scope $ACR_ID
   
     - name: Attach ACR to AKS
       run: |
