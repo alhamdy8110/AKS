@@ -40,5 +40,5 @@ variable "resource_storage_file_name" {
 
 variable "acrname" {
   type = string
-  default = "acr-akscluster"
+  default = "acrakscluster"
 }
