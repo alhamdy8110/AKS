@@ -12,7 +12,7 @@ permissions:
 env:
    RESOURCE_GROUP: rg-aks
    AKS_CLUSTER_NAME: aks-cluster
-   ACR_NAME: acr-akscluster
+   ACR_NAME: acraksclusternginx
 
 
 jobs:
@@ -41,7 +41,8 @@ jobs:
     - name: Build and push to ACR
       run: |
         docker pull abdulnaser93/my-nginx:latest
-        docker push ${{ env.ACR_NAME }}.azurecr.io
+        docker tag abdulnaser93/my-nginx:latest acr-akscluster.azurecr.io/my-nginx:latest
+        docker push ${{ env.ACR_NAME }}.azurecr.io/my-nginx:latest
 
 
     - name: Set up Kubernetes tools
