@@ -35,10 +35,12 @@ spec:
   selector:
     app: nginx-hello-world
   ports:
-    - protocol: TCP
+    - name: http  # Added name for port 80
+      protocol: TCP
       port: 80
       targetPort: 80
-    - protocol: TCP
+    - name: https  # Added name for port 443
+      protocol: TCP
       port: 443
       targetPort: 443
   type: LoadBalancer
