@@ -17,7 +17,15 @@ spec:
       initContainers:
       - name: copy-content
         image: acraksclusternginx.azurecr.io/my-nginx:latest
-        command: ["sh", "-c", "cp -r /usr/share/nginx/html/* /mnt/"]
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            if [ ! -f /mnt/index.html ]; then
+              cp -r /usr/share/nginx/html/* /mnt/;
+              echo "✅ Copied files to PVC";
+            else
+              echo "ℹ️ Files already exist in PVC, skipping copy";
+            fi
         volumeMounts:
         - name: html-content
           mountPath: /mnt
