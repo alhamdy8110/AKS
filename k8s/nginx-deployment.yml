@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: acraksclusternginx.azurecr.io/abdulnaser93/my-nginx:latest
+        image: acraksclusternginx.azurecr.io/my-nginx:latest
         ports:
         - containerPort: 80
         # - containerPort: 443
