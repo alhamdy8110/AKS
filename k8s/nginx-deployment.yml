@@ -14,28 +14,22 @@ spec:
       labels:
         app: nginx-hello-world
     spec:
-      # initContainers:
-      # - name: copy-content
-      #   image: acraksclusternginx.azurecr.io/my-nginx:latest
-      #   command: ["sh", "-c", "cp -r /usr/share/nginx/html/* /mnt/"]
-      #   volumeMounts:
-      #   - name: html-content
-      #     mountPath: /mnt
+      initContainers:
+      - name: copy-content
+        image: acraksclusternginx.azurecr.io/my-nginx:latest
+        command: ["sh", "-c", "cp -r /usr/share/nginx/html/* /mnt/"]
+        volumeMounts:
+        - name: html-content
+          mountPath: /mnt
       containers:
       - name: nginx
         image: acraksclusternginx.azurecr.io/my-nginx:latest
-        command: ["/bin/sh", "-c"]
-        args:
-          - |
-            cp /usr/share/nginx/html/index.html /mnt/html/index.html && 
-            echo "✅ Copied index.html to PVC" && 
-            sleep 3600   
         ports:
         - containerPort: 80
         # - containerPort: 443
         volumeMounts:
         - name: html-content
-          mountPath: /mnt/html
+          mountPath: /usr/share/nginx/html
       volumes:
       - name: html-content
         persistentVolumeClaim:
