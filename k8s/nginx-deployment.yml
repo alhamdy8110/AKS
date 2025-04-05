@@ -14,9 +14,16 @@ spec:
       labels:
         app: nginx-hello-world
     spec:
+      initContainers:
+      - name: copy-content
+        image: acraksclusternginx.azurecr.io/my-nginx:latest
+        command: ["sh", "-c", "cp -r /usr/share/nginx/html/* /mnt/"]
+        volumeMounts:
+        - name: html-content
+          mountPath: /mnt
       containers:
       - name: nginx
-        image: acraksclusternginx.azurecr.io/my-nginx:latest
+        image: acraksclusternginx.azurecr.io/my-nginx:latest        
         ports:
         - containerPort: 80
         # - containerPort: 443
