@@ -14,7 +14,8 @@ spec:
       - elpatrontitan.com
     secretName: tls-secret
   rules:
-  - http:
+  - host: elpatrontitan.com
+    http:
       paths:
       - path: /
         pathType: Prefix
