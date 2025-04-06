@@ -40,3 +40,11 @@ output "kube_config" {
   value     = azurerm_kubernetes_cluster.k8s.kube_config_raw
   sensitive = true
 }
+
+output "azurerm_container_registry" {
+  value = azurerm_container_registry.acr_name
+}
+
+output "dns_zone_name" {
+  value = azurerm_dns_zone.dns-zone.name
+}
