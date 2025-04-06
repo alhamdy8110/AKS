@@ -43,8 +43,10 @@ output "kube_config" {
 
 output "azurerm_container_registry" {
   value = azurerm_container_registry.acr_name
+  sensitive = true
 }
 
 output "dns_zone_name" {
   value = azurerm_dns_zone.dns-zone.name
+  sensitive = true
 }
