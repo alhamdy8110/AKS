@@ -42,3 +42,9 @@ variable "acrname" {
   type = string
   default = "acraksclusternginx"
 }
+
+variable "dns_zone_name" {
+  type        = string
+  default     = "elpatrontitan.com"
+  description = "Name of the DNS zone."
+}
