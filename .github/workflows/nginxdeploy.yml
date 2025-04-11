@@ -1,3 +1,7 @@
+#https://docs.github.com/en/actions/use-cases-and-examples/deploying/deploying-to-azure-kubernetes-service
+#https://github.com/marketplace/actions/azure-login#login-with-a-service-principal-secret
+#https://cert-manager.io/docs/installation/helm/
+
 name: Deploy Nginx to AKS
 
 on:
@@ -13,6 +17,9 @@ env:
    RESOURCE_GROUP: rg-aks
    AKS_CLUSTER_NAME: aks-cluster
    ACR_NAME: acraksclusternginx
+   APPGW_ID: app_gateway_id
+   IDENTITY_CLIENT_ID: agic_identity_client_id
+
 
 
 jobs:
@@ -82,18 +89,18 @@ jobs:
     - name: Install Helm
       uses: azure/setup-helm@v3
 
-    - name: Add Ingress-nginx Helm repo
-      run: |
-        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-        helm repo update     
+    # - name: Add Ingress-nginx Helm repo
+    #   run: |
+    #     helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    #     helm repo update     
         
-    - name: Install NGINX Ingress Controller 
-      run: |
-        helm install ingress-nginx ingress-nginx/ingress-nginx \
-          --create-namespace \
-          --namespace ingress-basic \
-          --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz \
-          --set controller.service.externalTrafficPolicy=Local
+    # - name: Install NGINX Ingress Controller 
+    #   run: |
+    #     helm install ingress-nginx ingress-nginx/ingress-nginx \
+    #       --create-namespace \
+    #       --namespace ingress-basic \
+    #       --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz \
+    #       --set controller.service.externalTrafficPolicy=Local
 
     - name: Add the Jetstack Helm repository
       run: |
@@ -110,14 +117,28 @@ jobs:
           --force      
 
 
+
+    - name: Install APG Controller 
+      run: |
+        az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} 
+
+        helm install ingress-azure \
+          oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
+          --set appgw.applicationGatewayID=$APPGW_ID \
+          --set armAuth.type=workloadIdentity \
+          --set armAuth.identityClientID=$IDENTITY_CLIENT_ID \
+          --set rbac.enabled=true \
+          --version 1.7.3
+
+
     - name: Deploy to AKS
       uses: azure/k8s-deploy@v3
       with:
         namespace: ingress-basic
         manifests: |
-          k8s/azure-file-sc.yml
-          k8s/azure-file-pvc.yml
           k8s/nginx-deployment.yml
           k8s/ingress.yml
           k8s/issuer.yml
-#         k8s/nginx-service.yml
+        # k8s/nginx-service.yml
+          # k8s/azure-file-sc.yml
+          # k8s/azure-file-pvc.yml

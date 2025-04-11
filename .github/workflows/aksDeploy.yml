@@ -1,3 +1,8 @@
+#https://github.com/hashicorp/setup-terraform
+#https://learn.microsoft.com/en-us/devops/deliver/iac-github-actions#deploy-with-github-actions
+#https://github.com/Azure/actions-workflow-samples?tab=readme-ov-file
+#https://azure.github.io/actions/
+
 name: 'AKS Deployment'
 
 on:
@@ -21,7 +26,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+      uses: hashicorp/setup-terraform@v3
 
     - name: Terraform Init
       working-directory: aks
@@ -46,6 +51,15 @@ jobs:
         git add aks/terraform.tfstate
         git commit -m "Update Terraform state"
         git push
+
+    - name: Export Terraform Outputs
+      id: tf_outputs
+      working-directory: tf-aks
+      run: |
+        echo "APPGW_ID=$(terraform output -raw app_gateway_id)" >> $GITHUB_ENV
+        echo "IDENTITY_CLIENT_ID=$(terraform output -raw agic_identity_client_id)" >> $GITHUB_ENV
+
+
 
     # - name: Upload tfstate
     #   uses: actions/upload-artifact@v4

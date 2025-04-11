@@ -1,4 +1,28 @@
+#https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-terraform?pivots=development-environment-azure-cli
 
+ # Locals block for hardcoded names
+ locals {
+   backend_address_pool_name      = "${azurerm_virtual_network.vnet.name}-beap"
+   frontend_port_name             = "${azurerm_virtual_network.vnet.name}-feport"
+   frontend_ip_configuration_name = "${azurerm_virtual_network.vnet.name}-feip"
+   http_setting_name              = "${azurerm_virtual_network.vnet.name}-be-htst"
+   listener_name                  = "${azurerm_virtual_network.vnet.name}-httplstn"
+   request_routing_rule_name      = "${azurerm_virtual_network.vnet.name}-rqrt"
+ }
+
+resource "azurerm_virtual_network" "aks_vnet" {
+  name                = var.virtual_network_name_aks
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_subnet" "aks_subnet" {
+  name                 = var.aks_subnet_name
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.aks_vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
 
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
@@ -34,7 +58,8 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     }
   }
   network_profile {
-    network_plugin    = "kubenet"
+    # network_plugin    = "kubenet"
+    network_plugin    = "azure"
     #load_balancer_sku = "standard"
   }
 }
@@ -58,3 +83,107 @@ resource "azurerm_dns_zone" "dns-zone" {
   name                = var.dns_zone_name
   resource_group_name = azurerm_resource_group.rg.name
 }
+
+resource "azurerm_subnet" "appgw_subnet" {
+   name                 = var.appgw_subnet_name
+   resource_group_name  = azurerm_resource_group.rg.name
+   virtual_network_name = azurerm_virtual_network.aks_vnet.name
+   address_prefixes     = ["10.0.2.0/24"]
+ }
+ 
+ resource "azurerm_public_ip" "appgw_public_ip" {
+   name                = "appgw-public-ip"
+   location            = azurerm_resource_group.rg.location
+   resource_group_name = azurerm_resource_group.rg.name
+   allocation_method   = "Static"
+   sku                 = "Standard"
+ }
+ 
+ resource "azurerm_application_gateway" "appgw" {
+   name                = var.app_gateway_name
+   location            = azurerm_resource_group.rg.location
+   resource_group_name = azurerm_resource_group.rg.name
+ 
+   sku {
+     name     = var.app_gateway_tier
+     tier     = var.app_gateway_tier
+     capacity = 1
+   }
+ 
+   gateway_ip_configuration {
+     name      = "gateway-ip-config"
+     subnet_id = azurerm_subnet.appgw_subnet.id
+   }
+ 
+   frontend_port {
+     name =  local.frontend_port_name
+     port = 80
+   }
+ 
+   frontend_ip_configuration {
+     name                 = local.frontend_ip_configuration_name
+     public_ip_address_id = azurerm_public_ip.appgw_public_ip.id
+   }
+ 
+   backend_address_pool {
+     name = "backendPool"
+   }
+ 
+   backend_http_settings {
+     name                  = local.http_setting_name
+     cookie_based_affinity = "Disabled"
+     port                  = 80
+     protocol              = "Http"
+     request_timeout       = 1
+   }
+ 
+   http_listener {
+     name                           = local.listener_name
+     frontend_ip_configuration_name = local.frontend_ip_configuration_name
+     frontend_port_name             = local.frontend_port_name
+     protocol                       = "Http"
+   }
+ 
+   request_routing_rule {
+     name                       = local.request_routing_rule_name
+     rule_type                  = "Basic"
+     http_listener_name         = local.listener_name
+     backend_address_pool_name  = local.backend_address_pool_name
+     backend_http_settings_name = local.http_setting_name
+   }
+
+   # Since this sample is creating an Application Gateway 
+   # that is later managed by an Ingress Controller, there is no need 
+   # to create a backend address pool (BEP). However, the BEP is still 
+   # required by the resource. Therefore, "lifecycle:ignore_changes" is 
+   # used to prevent TF from managing the gateway.
+   lifecycle {
+     ignore_changes = [
+       tags,
+       backend_address_pool,
+       backend_http_settings,
+       http_listener,
+       probe,
+       request_routing_rule,
+     ]
+   }
+
+ }
+ 
+ resource "azurerm_user_assigned_identity" "agic_identity" {
+   name                = "agic-identity"
+   location            = azurerm_resource_group.rg.location
+   resource_group_name = azurerm_resource_group.rg.name
+ }
+ 
+ resource "azurerm_role_assignment" "agic_appgw_contributor" {
+   principal_id         = azurerm_user_assigned_identity.agic_identity.principal_id
+   role_definition_name = "Contributor"
+   scope                = azurerm_application_gateway.appgw.id
+ }
+ 
+ resource "azurerm_role_assignment" "agic_vnet_reader" {
+   principal_id         = azurerm_user_assigned_identity.agic_identity.principal_id
+   role_definition_name = "Reader"
+   scope                = azurerm_virtual_network.aks_vnet.id
+ }

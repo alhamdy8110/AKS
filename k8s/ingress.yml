@@ -1,17 +1,23 @@
+##https://learn.microsoft.com/en-us/troubleshoot/azure/azure-kubernetes/load-bal-ingress-c/create-unmanaged-ingress-controller?tabs=azure-cli
+#https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/configmap.md#load-balance
+#https://azure.github.io/application-gateway-kubernetes-ingress/how-tos/lets-encrypt/
+#https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: hello-world-ingress
   namespace: ingress-basic
   annotations:
-    kubernetes.io/ingress.class: nginx
+    # kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt
     # nginx.ingress.kubernetes.io/use-regex: "true"
     # nginx.ingress.kubernetes.io/rewrite-target: /$1
-    nginx.ingress.kubernetes.io/load-balance: round_robin
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    # nginx.ingress.kubernetes.io/load-balance: round_robin
+    # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
 spec:
-  ingressClassName: nginx
+  # ingressClassName: nginx
+  ingressClassName: azure-application-gateway
   tls:
   - hosts:
       - elpatrontitan.com
@@ -28,7 +34,7 @@ spec:
             name: nginx-service
             port:
               number: 80
-  - host: www.elpatrontitan.com  # <- Add this new rule
+  - host: www.elpatrontitan.com 
     http:
       paths:
       - path: /

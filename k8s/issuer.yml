@@ -1,3 +1,5 @@
+#https://cert-manager.io/docs/tutorials/getting-started-aks-letsencrypt/
+
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -11,4 +13,5 @@ spec:
     solvers:
       - http01:
           ingress:
-            class: nginx
+            # class: nginx
+            class: azure-application-gateway

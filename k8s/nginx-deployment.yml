@@ -14,34 +14,34 @@ spec:
       labels:
         app: nginx-hello-world
     spec:
-      initContainers:
-      - name: copy-content
-        image: acraksclusternginx.azurecr.io/my-nginx:latest
-        command: ["/bin/sh", "-c"]
-        args:
-          - |
-            if [ ! -f /mnt/index.html ]; then
-              cp -r /usr/share/nginx/html/* /mnt/;
-              echo "✅ Copied files to PVC";
-            else
-              echo "ℹ️ Files already exist in PVC, skipping copy";
-            fi
-        volumeMounts:
-        - name: html-content
-          mountPath: /mnt
+      # initContainers:
+      # - name: copy-content
+      #   image: acraksclusternginx.azurecr.io/my-nginx:latest
+      #   command: ["/bin/sh", "-c"]
+      #   args:
+      #     - |
+      #       if [ ! -f /mnt/index.html ]; then
+      #         cp -r /usr/share/nginx/html/* /mnt/;
+      #         echo "✅ Copied files to PVC";
+      #       else
+      #         echo "ℹ️ Files already exist in PVC, skipping copy";
+      #       fi
+      #   volumeMounts:
+      #   - name: html-content
+      #     mountPath: /mnt
       containers:
       - name: nginx
         image: acraksclusternginx.azurecr.io/my-nginx:latest
         ports:
         - containerPort: 80
         # - containerPort: 443
-        volumeMounts:
-        - name: html-content
-          mountPath: /usr/share/nginx/html
-      volumes:
-      - name: html-content
-        persistentVolumeClaim:
-          claimName: nginx-html-pvc
+      #   volumeMounts:
+      #   - name: html-content
+      #     mountPath: /usr/share/nginx/html
+      # volumes:
+      # - name: html-content
+      #   persistentVolumeClaim:
+      #     claimName: nginx-html-pvc
 ---
 apiVersion: v1
 kind: Service

@@ -1,3 +1,15 @@
+ variable "virtual_network_name_aks" {
+   type        = string
+   description = "Virtual network name."
+   default     = "aks-vnet"
+ }
+
+ variable "aks_subnet_name" {
+   type        = string
+   description = "Name of the subset."
+   default     = "aks-subnet"
+ }
+
 variable "resource_group_location" {
   type        = string
   default     = "eastus"
@@ -47,4 +59,34 @@ variable "dns_zone_name" {
   type        = string
   default     = "elpatrontitan.com"
   description = "Name of the DNS zone."
+  sensitive = true
 }
+
+ variable "appgw_subnet_name" {
+   type        = string
+   description = "Name of the subset."
+   default     = "appgw-subnet"
+ }
+
+ variable "app_gateway_name" {
+   description = "Name of the Application Gateway"
+   type        = string
+   default     = "agic-appgw"
+ }
+
+
+output "app_gateway_id" {
+   description = "The ID of the Azure Application Gateway"
+   value       = azurerm_application_gateway.appgw.id
+ }
+ 
+ output "agic_identity_client_id" {
+   description = "The Client ID of the AGIC User Assigned Managed Identity"
+   value       = azurerm_user_assigned_identity.agic_identity.client_id
+ }
+
+  variable "app_gateway_tier" {
+   description = "Tier of the Application Gateway tier."
+   type        = string
+   default     = "Basic_v2"
+ }
