@@ -105,7 +105,7 @@ resource "azurerm_subnet" "appgw_subnet" {
    resource_group_name = azurerm_resource_group.rg.name
  
    sku {
-     name     = var.app_gateway_tier
+     name     = "Standard_Small"
      tier     = var.app_gateway_tier
      capacity = 1
    }

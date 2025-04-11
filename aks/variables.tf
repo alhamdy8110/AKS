@@ -88,5 +88,5 @@ output "app_gateway_id" {
   variable "app_gateway_tier" {
    description = "Tier of the Application Gateway tier."
    type        = string
-   default     = "Standard_Small"
+   default     = "Standard"
  }
