@@ -54,12 +54,15 @@ jobs:
 
     - name: Export Terraform Outputs
       id: tf_outputs
-      working-directory: tf-aks
+      working-directory: aks
       run: |
         echo "APPGW_ID=$(terraform output -raw app_gateway_id)" >> $GITHUB_ENV
         echo "IDENTITY_CLIENT_ID=$(terraform output -raw agic_identity_client_id)" >> $GITHUB_ENV
 
-
+    - name: Debug output
+      run: |
+        echo "APPGW_ID=${{ env.APPGW_ID }}"
+        echo "IDENTITY_CLIENT_ID=${{ env.IDENTITY_CLIENT_ID }}"
 
     # - name: Upload tfstate
     #   uses: actions/upload-artifact@v4
