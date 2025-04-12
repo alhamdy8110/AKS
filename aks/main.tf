@@ -33,7 +33,7 @@ resource "azurerm_subnet" "aks_subnet" {
 
 data "azurerm_subnet" "kubesubnet" {
   name                 = var.aks_subnet_name
-  virtual_network_name = azurerm_virtual_network.vnet.name
+  virtual_network_name = azurerm_virtual_network.aks_vnet.name
   resource_group_name  = azurerm_resource_group.rg.name
 }
 
@@ -222,7 +222,7 @@ resource "azurerm_subnet" "appgw_subnet" {
  }
  
  resource "azurerm_role_assignment" "agic_vnet_reader" {
-  scope                = azurerm_virtual_network.vnet.id
+  scope                = azurerm_virtual_network.aks_vnet.id
   role_definition_name = "Network Contributor"
   principal_id         = data.azurerm_user_assigned_identity.ingress.principal_id
  }
