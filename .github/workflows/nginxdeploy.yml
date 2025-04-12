@@ -136,9 +136,9 @@ jobs:
       with:
         namespace: ingress-basic
         manifests: |
-          aks/nginx-deployment.yml
-          aks/ingress.yml
-          aks/issuer.yml
-        # aks/nginx-service.yml
-          # aks/azure-file-sc.yml
-          # aks/azure-file-pvc.yml
+          k8s/nginx-deployment.yml
+          k8s/ingress.yml
+          k8s/issuer.yml
+        # k8s/nginx-service.yml
+          # k8s/azure-file-sc.yml
+          # k8s/azure-file-pvc.yml
