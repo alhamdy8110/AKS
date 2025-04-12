@@ -26,6 +26,12 @@ variable "aks_cluster_name" {
   default = "aks-cluster"
 }
 
+ variable "aks_vm_size" {
+   type        = string
+   description = "The size of the virtual machine."
+   default     = "Standard_D2s_v3"
+ }
+
  variable "aks_private_cluster" {
    type        = bool
    description = "(Optional) Should this Kubernetes Cluster have its API server only exposed on internal IP addresses? This provides a Private IP Address for the Kubernetes API on the Virtual Network where the Kubernetes Cluster is located."

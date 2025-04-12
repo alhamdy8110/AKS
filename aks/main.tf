@@ -1,6 +1,11 @@
 #https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-terraform?pivots=development-environment-azure-cli
 
  # Locals block for hardcoded names
+  resource "azurerm_resource_group" "rg" {
+  location = var.resource_group_location
+  name     = "${var.resource_group_name}"
+}
+ 
  locals {
    backend_address_pool_name      = "${azurerm_virtual_network.aks_vnet.name}-beap"
    frontend_port_name             = "${azurerm_virtual_network.aks_vnet.name}-feport"
@@ -9,6 +14,8 @@
    listener_name                  = "${azurerm_virtual_network.aks_vnet.name}-httplstn"
    request_routing_rule_name      = "${azurerm_virtual_network.aks_vnet.name}-rqrt"
  }
+
+
 
 resource "azurerm_virtual_network" "aks_vnet" {
   name                = var.virtual_network_name_aks
@@ -24,11 +31,19 @@ resource "azurerm_subnet" "aks_subnet" {
   address_prefixes     = ["10.0.0.0/21"]
 }
 
-resource "azurerm_resource_group" "rg" {
-  location = var.resource_group_location
-  name     = "${var.resource_group_name}"
+data "azurerm_subnet" "kubesubnet" {
+  name                 = var.aks_subnet_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  resource_group_name  = azurerm_resource_group.rg.name
 }
 
+
+# User-assigned identity for AKS
+resource "azurerm_user_assigned_identity" "aks" {
+  name                = "aks-${var.aks_cluster_name}-identity"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+}
 
  # aks cluster
  resource "azurerm_kubernetes_cluster" "aks" {
@@ -41,15 +56,15 @@ resource "azurerm_resource_group" "rg" {
    sku_tier                          = var.aks_sku_tier
 
   identity {
-    type = "SystemAssigned"
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.aks.id]
   }
 
   default_node_pool {
-    name       = "agentpool"
-    vm_size    = "Standard_D2s_v3"
+    name       = "systempool"
+    vm_size    = var.aks_vm_size
     node_count = var.node_count
-
-
+    vnet_subnet_id  = data.azurerm_subnet.kubesubnet.id
   }
 
   
@@ -67,6 +82,13 @@ resource "azurerm_resource_group" "rg" {
     service_cidr   = var.aks_service_cidr
     #load_balancer_sku = "standard"
   }
+    ingress_application_gateway {
+    gateway_id = azurerm_application_gateway.appgw.id
+  }
+
+  depends_on = [
+    azurerm_application_gateway.appgw
+  ]
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
@@ -81,6 +103,7 @@ resource "azurerm_container_registry" "acr_name" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Basic"
+  admin_enabled       = false
 }
 
 
@@ -95,6 +118,7 @@ resource "azurerm_subnet" "appgw_subnet" {
    virtual_network_name = azurerm_virtual_network.aks_vnet.name
    address_prefixes     = ["10.0.8.0/24"]
  }
+
  
  resource "azurerm_public_ip" "appgw_public_ip" {
    name                = "appgw-public-ip"
@@ -179,20 +203,26 @@ resource "azurerm_subnet" "appgw_subnet" {
 
  }
  
- resource "azurerm_user_assigned_identity" "agic_identity" {
-   name                = "agic-identity"
-   location            = azurerm_resource_group.rg.location
-   resource_group_name = azurerm_resource_group.rg.name
+   data "azurerm_user_assigned_identity" "ingress" {
+   name                = "ingressapplicationgateway-${azurerm_kubernetes_cluster.aks.name}"
+   resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
  }
+
+
+ resource "azurerm_role_assignment" "agic_rg_reader" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Reader"
+  principal_id         = data.azurerm_user_assigned_identity.ingress.principal_id
+}
  
  resource "azurerm_role_assignment" "agic_appgw_contributor" {
-   principal_id         = azurerm_user_assigned_identity.agic_identity.principal_id
-   role_definition_name = "Contributor"
    scope                = azurerm_application_gateway.appgw.id
+   role_definition_name = "Contributor"
+   principal_id         = data.azurerm_user_assigned_identity.ingress.principal_id
  }
  
  resource "azurerm_role_assignment" "agic_vnet_reader" {
-   principal_id         = azurerm_user_assigned_identity.agic_identity.principal_id
-   role_definition_name = "Reader"
-   scope                = azurerm_virtual_network.aks_vnet.id
+  scope                = azurerm_virtual_network.vnet.id
+  role_definition_name = "Network Contributor"
+  principal_id         = data.azurerm_user_assigned_identity.ingress.principal_id
  }
