@@ -3,7 +3,7 @@
 #https://azure.github.io/application-gateway-kubernetes-ingress/how-tos/lets-encrypt/
 #https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md
 
-apiVersion: networking.aks.io/v1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: hello-world-ingress
