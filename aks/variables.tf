@@ -120,7 +120,7 @@ output "app_gateway_id" {
  
  output "agic_identity_client_id" {
    description = "The Client ID of the AGIC User Assigned Managed Identity"
-   value       = azurerm_user_assigned_identity.ingress.client_id
+   value       = data.azurerm_user_assigned_identity.ingress.client_id
  }
 
   variable "app_gateway_tier" {
