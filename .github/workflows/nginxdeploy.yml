@@ -123,6 +123,7 @@ jobs:
         az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.aks_CLUSTER_NAME }} 
 
         helm upgrade --install ingress-azure \
+          --namespace ingress-basic \
           oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
           --set appgw.applicationGatewayID=$APPGW_ID \
           --set armAuth.type=workloadIdentity \
