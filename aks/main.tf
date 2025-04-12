@@ -114,6 +114,8 @@ resource "azurerm_subnet" "appgw_subnet" {
      tier     = var.app_gateway_tier
      capacity = 1
    }
+
+   zones = ["1"]
  
    gateway_ip_configuration {
      name      = "gateway-ip-config"
