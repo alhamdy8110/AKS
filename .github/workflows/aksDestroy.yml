@@ -1,4 +1,4 @@
-name: 'AKS Destroy'
+name: 'aks Destroy'
 
 on:
   workflow_dispatch:

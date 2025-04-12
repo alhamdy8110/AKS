@@ -2,7 +2,7 @@
 #https://github.com/marketplace/actions/azure-login#login-with-a-service-principal-secret
 #https://cert-manager.io/docs/installation/helm/
 
-name: Deploy Nginx to AKS
+name: Deploy Nginx to aks
 
 on:
     workflow_dispatch:
@@ -15,7 +15,7 @@ permissions:
 
 env:
    RESOURCE_GROUP: rg-aks
-   AKS_CLUSTER_NAME: aks-cluster
+   aks_CLUSTER_NAME: aks-cluster
    ACR_NAME: acraksclusternginx
    APPGW_ID: app_gateway_id
    IDENTITY_CLIENT_ID: agic_identity_client_id
@@ -38,20 +38,20 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
         enable-AzPSSession: true
 
-    # - name: Grant AKS access to ACR
+    # - name: Grant aks access to ACR
     #   run: |
-    #     AKS_CLIENT_ID=$(az aks show --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} --query "identityProfile.kubeletidentity.clientId" -o tsv)
+    #     aks_CLIENT_ID=$(az aks show --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.aks_CLUSTER_NAME }} --query "identityProfile.kubeletidentity.clientId" -o tsv)
     #     ACR_ID=$(az acr show --name ${{ env.ACR_NAME }} --query id -o tsv)
 
-    #     echo "Granting AcrPull role to AKS kubelet identity..."
+    #     echo "Granting AcrPull role to aks kubelet identity..."
     #     az role assignment create \
-    #       --assignee $AKS_CLIENT_ID \
+    #       --assignee $aks_CLIENT_ID \
     #       --role "AcrPull" \
     #       --scope $ACR_ID
   
-    - name: Attach ACR to AKS
+    - name: Attach ACR to aks
       run: |
-        az aks update -n ${{ env.AKS_CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --attach-acr ${{ env.ACR_NAME }}
+        az aks update -n ${{ env.aks_CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --attach-acr ${{ env.ACR_NAME }}
   
     - name: Login to ACR
       uses: azure/docker-login@v1
@@ -77,12 +77,12 @@ jobs:
       with:
        kubelogin-version: 'v0.0.26'
     
-    - name: Set AKS context
+    - name: Set aks context
       id: set-context
       uses: azure/aks-set-context@v3
       with:
        resource-group: '${{ env.RESOURCE_GROUP }}' 
-       cluster-name: '${{ env.AKS_CLUSTER_NAME }}'
+       cluster-name: '${{ env.aks_CLUSTER_NAME }}'
        admin: 'false'
        use-kubelogin: 'true' 
 
@@ -120,7 +120,7 @@ jobs:
 
     - name: Install APG Controller 
       run: |
-        az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} 
+        az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.aks_CLUSTER_NAME }} 
 
         helm install ingress-azure \
           oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
@@ -131,14 +131,14 @@ jobs:
           --version 1.7.3
 
 
-    - name: Deploy to AKS
-      uses: azure/k8s-deploy@v3
+    - name: Deploy to aks
+      uses: azure/aks-deploy@v3
       with:
         namespace: ingress-basic
         manifests: |
-          k8s/nginx-deployment.yml
-          k8s/ingress.yml
-          k8s/issuer.yml
-        # k8s/nginx-service.yml
-          # k8s/azure-file-sc.yml
-          # k8s/azure-file-pvc.yml
+          aks/nginx-deployment.yml
+          aks/ingress.yml
+          aks/issuer.yml
+        # aks/nginx-service.yml
+          # aks/azure-file-sc.yml
+          # aks/azure-file-pvc.yml

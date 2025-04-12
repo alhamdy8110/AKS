@@ -21,10 +21,42 @@ variable "resource_group_name" {
   default     = "rg-aks"
   description = "Prefix of the resource group name that's combined with a random ID so name is unique in your Azure subscription."
 }
-variable "aksname" {
+variable "aks_cluster_name" {
   type = string
   default = "aks-cluster"
 }
+
+ variable "aks_private_cluster" {
+   type        = bool
+   description = "(Optional) Should this Kubernetes Cluster have its API server only exposed on internal IP addresses? This provides a Private IP Address for the Kubernetes API on the Virtual Network where the Kubernetes Cluster is located."
+   default     = false
+ }
+
+  variable "aks_enable_rbac" {
+   description = "(Optional) Is Role Based Access Control based on Azure AD enabled?"
+   type        = bool
+   default     = false
+ }
+
+ variable "aks_sku_tier" {
+   type        = string
+   description = "(Optional) The SKU tier that should be used for this Kubernetes Cluster. Possible values are Free and Paid (which includes the Uptime SLA)."
+   default     = "Free"
+ }
+
+ variable "aks_service_cidr" {
+   type        = string
+   description = "(Optional) The Network Range used by the Kubernetes service."
+   default     = "192.168.0.0/20"
+ }
+
+ variable "aks_dns_service_ip" {
+   type        = string
+   description = "(Optional) IP address within the Kubernetes service address range that will be used by cluster service discovery (kube-dns)."
+   default     = "192.168.0.10"
+ }
+
+
 
 variable "node_count" {
   type        = number

@@ -30,12 +30,15 @@ resource "azurerm_resource_group" "rg" {
 }
 
 
-
-resource "azurerm_kubernetes_cluster" "k8s" {
-  location            = azurerm_resource_group.rg.location
-  name                = var.aksname
-  resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = "${var.aksname}-dns"
+ # aks cluster
+ resource "azurerm_kubernetes_cluster" "aks" {
+   name                              = var.aks_cluster_name
+   location                          = azurerm_resource_group.rg.location
+   resource_group_name               = azurerm_resource_group.rg.name
+   dns_prefix                        = "${var.aks_cluster_name}-dns"
+   private_cluster_enabled           = var.aks_private_cluster
+   role_based_access_control_enabled = var.aks_enable_rbac
+   sku_tier                          = var.aks_sku_tier
 
   identity {
     type = "SystemAssigned"
@@ -60,13 +63,15 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   network_profile {
     # network_plugin    = "kubenet"
     network_plugin    = "azure"
+    dns_service_ip = var.aks_dns_service_ip
+    service_cidr   = var.aks_service_cidr
     #load_balancer_sku = "standard"
   }
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
   name                  = "userpool"
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.k8s.id
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
   vm_size               = "Standard_A2_v2" 
   node_count            = 1
 }
@@ -126,7 +131,7 @@ resource "azurerm_subnet" "appgw_subnet" {
    }
  
    backend_address_pool {
-     name = "backendPool"
+     name = local.backend_address_pool_name
    }
  
    backend_http_settings {
@@ -146,6 +151,7 @@ resource "azurerm_subnet" "appgw_subnet" {
  
    request_routing_rule {
      name                       = local.request_routing_rule_name
+     priority                   = 1
      rule_type                  = "Basic"
      http_listener_name         = local.listener_name
      backend_address_pool_name  = local.backend_address_pool_name

@@ -3,7 +3,7 @@
 #https://github.com/Azure/actions-workflow-samples?tab=readme-ov-file
 #https://azure.github.io/actions/
 
-name: 'AKS Deployment'
+name: 'aks Deployment'
 
 on:
   workflow_dispatch:
