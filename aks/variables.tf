@@ -47,13 +47,13 @@ variable "aks_cluster_name" {
  variable "aks_service_cidr" {
    type        = string
    description = "(Optional) The Network Range used by the Kubernetes service."
-   default     = "192.168.0.0/20"
+   default     = "10.0.16.0/20"
  }
 
  variable "aks_dns_service_ip" {
    type        = string
    description = "(Optional) IP address within the Kubernetes service address range that will be used by cluster service discovery (kube-dns)."
-   default     = "192.168.0.10"
+   default     = "10.0.16.10"
  }
 
 
