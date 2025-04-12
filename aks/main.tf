@@ -64,7 +64,7 @@ resource "azurerm_user_assigned_identity" "aks" {
     name       = "systempool"
     vm_size    = var.aks_vm_size
     node_count = var.node_count
-    vnet_subnet_id  = data.azurerm_subnet.kubesubnet.id
+    vnet_subnet_id  = azurerm_subnet.kubesubnet.id
   }
 
   
