@@ -86,16 +86,17 @@ jobs:
         echo "APP_GATEWAY_NAME=$(terraform output -raw app_gateway_name)" >> tf-outputs.env
         echo "IDENTITY_RESOURCE_ID=$(terraform output -raw identity_resource_id)" >> tf-outputs.env
 
-    - name: Upload Terraform Outputs as Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: tf-outputs
-        path: aks/tf-outputs.env
-
-      
-
-    # - name: Upload tfstate
+    # - name: Upload Terraform Outputs as Artifact
     #   uses: actions/upload-artifact@v4
     #   with:
-    #     name: terraform-state
-    #     path: aks/terraform.tfstate
+    #     name: tf-outputs
+    #     path: aks/tf-outputs.env
+
+    - name: Save Terraform outputs to repo
+      run: |
+        git config user.email "github-actions@github.com"
+        git config user.name "GitHub Actions"
+        cp aks/tf-outputs.env ./tf-outputs.env
+        git add tf-outputs.env
+        git commit -m "Save tf outputs"
+        git push
