@@ -159,8 +159,11 @@ jobs:
         az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME
     
         # Add the Helm repo 
-        helm repo add application-gateway-kubernetes-ingress https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/
-        helm repo update
+        # helm repo add application-gateway-kubernetes-ingress https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/
+        # helm repo update
+        # Download Helm chart from GitHub release
+        wget https://github.com/Azure/application-gateway-kubernetes-ingress/releases/download/1.7.1/ingress-azure-1.7.1.tgz
+
     
         # Download the Helm config
         wget https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml -O helm-config.yaml
@@ -174,7 +177,10 @@ jobs:
         sed -i "s|<watch-namespace>|ingress-basic|g" helm-config.yaml
     
         # Install AGIC using Helm config
-        helm install -f helm-config.yaml application-gateway-kubernetes-ingress/ingress-azure --generate-name
+        # helm install -f helm-config.yaml application-gateway-kubernetes-ingress/ingress-azure --generate-name
+        helm install -f helm-config.yaml ingress-azure ./ingress-azure-1.7.1.tgz --namespace ingress-basic
+        rm helm-config.yaml ingress-azure-1.7.1.tgz
+
 
   
 
