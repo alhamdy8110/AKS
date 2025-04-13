@@ -21,15 +21,6 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
     runs-on: ubuntu-latest
-    outputs:
-      RESOURCE_GROUP: ${{ steps.set-outputs.outputs.RESOURCE_GROUP }}
-      AKS_CLUSTER_NAME: ${{ steps.set-outputs.outputs.AKS_CLUSTER_NAME }}
-      ACR_NAME: ${{ steps.set-outputs.outputs.ACR_NAME }}
-      APPGW_ID: ${{ steps.set-outputs.outputs.APPGW_ID }}
-      IDENTITY_CLIENT_ID: ${{ steps.set-outputs.outputs.IDENTITY_CLIENT_ID }}
-      APP_GATEWAY_NAME: ${{ steps.set-outputs.outputs.APP_GATEWAY_NAME }}
-      IDENTITY_RESOURCE_ID: ${{ steps.set-outputs.outputs.IDENTITY_RESOURCE_ID }}
-
 
     steps:
     - name: Checkout
