@@ -72,7 +72,7 @@ output "kube_config" {
 }
 
 output "azurerm_container_registry" {
-  value = azurerm_container_registry.acr_name
+  value = azurerm_container_registry.acr_name.name
   sensitive = true
 }
 
