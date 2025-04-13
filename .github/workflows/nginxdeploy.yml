@@ -63,11 +63,11 @@ jobs:
     #       --role "AcrPull" \
     #       --scope $ACR_ID
   
-    - name: Debug environment values
-      run: |
-        echo "AKS_CLUSTER_NAME=$AKS_CLUSTER_NAME"
-        echo "RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}"
-        echo "ACR_NAME=$ACR_NAME"
+    # - name: Debug environment values
+    #   run: |
+    #     echo "AKS_CLUSTER_NAME=$AKS_CLUSTER_NAME"
+    #     echo "RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}"
+    #     echo "ACR_NAME=$ACR_NAME"
 
     - name: Attach ACR to aks
       run: |
@@ -78,7 +78,7 @@ jobs:
       with:
         login-server: $ACR_NAME.azurecr.io
         username: ${{ secrets.AZURE_CLIENT_ID }} 
-        password: ${{ secrets.AZURE_CLIENT_SECRET }} 
+        password: ${{ secrets.AZURE_CLIENT_SECRET }}
 
     - name: Build and push to ACR
       run: |
