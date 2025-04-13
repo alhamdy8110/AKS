@@ -50,6 +50,12 @@ jobs:
     #       --role "AcrPull" \
     #       --scope $ACR_ID
   
+    - name: Debug environment values
+      run: |
+        echo "AKS_CLUSTER_NAME=$AKS_CLUSTER_NAME"
+        echo "RESOURCE_GROUP=$RESOURCE_GROUP"
+        echo "ACR_NAME=$ACR_NAME"
+
     - name: Attach ACR to aks
       run: |
         az aks update -n $AKS_CLUSTER_NAME -g $RESOURCE_GROUP --attach-acr $ACR_NAME
