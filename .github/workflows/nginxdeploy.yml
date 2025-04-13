@@ -83,8 +83,8 @@ jobs:
     - name: Build and push to ACR
       run: |
         docker pull abdulnaser93/my-nginx:latest
-        docker tag abdulnaser93/my-nginx:latest $ACR_NAME.azurecr.io/my-nginx:latest
-        docker push $ACR_NAME.azurecr.io/my-nginx:latest
+        docker tag abdulnaser93/my-nginx:latest ${{ env.ACR_NAME }}.azurecr.io/my-nginx:latest
+        docker push ${{ env.ACR_NAME }}.azurecr.io/my-nginx:latest
 
 
     - name: Set up Kubernetes tools
