@@ -113,15 +113,6 @@ variable "dns_zone_name" {
  }
 
 
-output "app_gateway_id" {
-   description = "The ID of the Azure Application Gateway"
-   value       = azurerm_application_gateway.appgw.id
- }
- 
- output "agic_identity_client_id" {
-   description = "The Client ID of the AGIC User Assigned Managed Identity"
-   value       = data.azurerm_user_assigned_identity.ingress.client_id
- }
 
   variable "app_gateway_tier" {
    description = "Tier of the Application Gateway tier."

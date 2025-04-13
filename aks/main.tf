@@ -35,7 +35,7 @@ resource "azurerm_subnet" "aks_subnet" {
 
 # User-assigned identity for AKS
 resource "azurerm_user_assigned_identity" "aks" {
-  name                = "aks-${var.aks_cluster_name}-identity"
+  name                = "${var.aks_cluster_name}-identity"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 }

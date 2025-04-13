@@ -6,8 +6,21 @@ output "aks_cluster_name" {
   value = azurerm_kubernetes_cluster.aks.name
 }
 
- output "application_gateway_name" {
+ output "app_gateway_name" {
    value = azurerm_application_gateway.appgw.name
+ }
+ 
+output "app_gateway_id" {
+   description = "The ID of the Azure Application Gateway"
+   value       = azurerm_application_gateway.appgw.id
+ }
+   output "app_ip_address" {
+   value = azurerm_public_ip.appgw_public_ip.ip_address
+ }
+ 
+ output "agic_identity_client_id" {
+   description = "The Client ID of the AGIC User Assigned Managed Identity"
+   value       = data.azurerm_user_assigned_identity.ingress.client_id
  }
 
  output "identity_name" {
@@ -22,9 +35,7 @@ output "aks_cluster_name" {
    value = azurerm_user_assigned_identity.aks.client_id
  }
 
-  output "application_ip_address" {
-   value = azurerm_public_ip.appgw_public_ip.ip_address
- }
+
 output "client_certificate" {
   value     = azurerm_kubernetes_cluster.aks.kube_config[0].client_certificate
   sensitive = true

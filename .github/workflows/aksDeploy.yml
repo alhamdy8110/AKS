@@ -56,8 +56,13 @@ jobs:
       id: tf_outputs
       working-directory: aks
       run: |
+        echo "RESOURCE_GROUP=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
+        echo "aks_CLUSTER_NAME=$(terraform output -raw aks_cluster_name)" >> $GITHUB_ENV
         echo "APPGW_ID=$(terraform output -raw app_gateway_id)" >> $GITHUB_ENV
         echo "IDENTITY_CLIENT_ID=$(terraform output -raw agic_identity_client_id)" >> $GITHUB_ENV
+        echo "APP_GATEWAY_NAME=$(terraform output -raw app_gateway_name)" >> $GITHUB_ENV
+        echo "IDENTITY_RESOURCE_ID=$(terraform output -raw identity_resource_id)" >> $GITHUB_ENV
+        echo "ACR_NAME=$(terraform output -raw azurerm_container_registry)" >> $GITHUB_ENV
 
     - name: Debug output
       run: |

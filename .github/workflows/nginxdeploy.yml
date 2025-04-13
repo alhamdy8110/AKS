@@ -14,12 +14,13 @@ permissions:
   checks: write # Required for status checks
 
 env:
-   RESOURCE_GROUP: rg-aks
-   aks_CLUSTER_NAME: aks-cluster
-   ACR_NAME: acraksclusternginx
+   RESOURCE_GROUP: resource_group_name
+   AKS_CLUSTER_NAME: aks_cluster_name
+   ACR_NAME: azurerm_container_registry
    APPGW_ID: app_gateway_id
    IDENTITY_CLIENT_ID: agic_identity_client_id
-
+   APP_GATEWAY_NAME: app_gateway_name
+   IDENTITY_RESOURCE_ID: identity_resource_id
 
 
 jobs:
@@ -40,7 +41,7 @@ jobs:
 
     # - name: Grant aks access to ACR
     #   run: |
-    #     aks_CLIENT_ID=$(az aks show --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.aks_CLUSTER_NAME }} --query "identityProfile.kubeletidentity.clientId" -o tsv)
+    #     aks_CLIENT_ID=$(az aks show --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} --query "identityProfile.kubeletidentity.clientId" -o tsv)
     #     ACR_ID=$(az acr show --name ${{ env.ACR_NAME }} --query id -o tsv)
 
     #     echo "Granting AcrPull role to aks kubelet identity..."
@@ -51,7 +52,7 @@ jobs:
   
     - name: Attach ACR to aks
       run: |
-        az aks update -n ${{ env.aks_CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --attach-acr ${{ env.ACR_NAME }}
+        az aks update -n ${{ env.AKS_CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --attach-acr ${{ env.ACR_NAME }}
   
     - name: Login to ACR
       uses: azure/docker-login@v1
@@ -82,7 +83,7 @@ jobs:
       uses: azure/aks-set-context@v3
       with:
        resource-group: '${{ env.RESOURCE_GROUP }}' 
-       cluster-name: '${{ env.aks_CLUSTER_NAME }}'
+       cluster-name: '${{ env.AKS_CLUSTER_NAME }}'
        admin: 'false'
        use-kubelogin: 'true' 
 
@@ -118,19 +119,42 @@ jobs:
 
 
 
-    - name: Install APG Controller 
+    # - name: Install APG Controller 
+    #   run: |
+    #     az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} 
+
+    #     helm upgrade --install ingress-azure \
+    #       --namespace ingress-basic \
+    #       oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
+    #       --set appgw.applicationGatewayID=$APPGW_ID \
+    #       --set armAuth.type=workloadIdentity \
+    #       --set armAuth.identityClientID=$IDENTITY_CLIENT_ID \
+    #       --set rbac.enabled=true \
+    #       --version 1.7.3 
+    - name: Install AGIC Controller
       run: |
-        az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.aks_CLUSTER_NAME }} 
+        # Get AKS credentials
+        az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+    
+        # Add the Helm repo (use China cloud if needed)
+        helm repo add application-gateway-kubernetes-ingress https://appgwingress.blob.core.chinacloudapi.cn/ingress-azure-helm-package/
+        helm repo update
+    
+        # Download the Helm config
+        wget https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml -O helm-config.yaml
+    
+        # Update the Helm config with environment variables
+        sed -i "s|<subscription-id>|${{ secrets.AZURE_SUBSCRIPTION }}|g" helm-config.yaml
+        sed -i "s|<resource-group-name>|${{ env.RESOURCE_GROUP }}|g" helm-config.yaml
+        sed -i "s|<application-gateway-name>|${{ env.APP_GATEWAY_NAME }}|g" helm-config.yaml
+        sed -i "s|<identity-resource-id>|${{ env.IDENTITY_RESOURCE_ID }}|g" helm-config.yaml
+        sed -i "s|<identity-client-id>|${{ env.IDENTITY_CLIENT_ID }}|g" helm-config.yaml
+        sed -i "s|<watch-namespace>|ingress-basic|g" helm-config.yaml
+    
+        # Install AGIC using Helm config
+        helm install -f helm-config.yaml application-gateway-kubernetes-ingress/ingress-azure --generate-name
 
-        helm upgrade --install ingress-azure \
-          --namespace ingress-basic \
-          oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
-          --set appgw.applicationGatewayID=$APPGW_ID \
-          --set armAuth.type=workloadIdentity \
-          --set armAuth.identityClientID=$IDENTITY_CLIENT_ID \
-          --set rbac.enabled=true \
-          --version 1.7.3
-
+  
 
     - name: Deploy to aks
       uses: azure/k8s-deploy@v3
