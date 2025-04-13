@@ -19,7 +19,17 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
     runs-on: ubuntu-latest
+    outputs:
+      RESOURCE_GROUP: ${{ steps.set-outputs.outputs.RESOURCE_GROUP }}
+      AKS_CLUSTER_NAME: ${{ steps.set-outputs.outputs.AKS_CLUSTER_NAME }}
+      ACR_NAME: ${{ steps.set-outputs.outputs.ACR_NAME }}
+      APPGW_ID: ${{ steps.set-outputs.outputs.APPGW_ID }}
+      IDENTITY_CLIENT_ID: ${{ steps.set-outputs.outputs.IDENTITY_CLIENT_ID }}
+      APP_GATEWAY_NAME: ${{ steps.set-outputs.outputs.APP_GATEWAY_NAME }}
+      IDENTITY_RESOURCE_ID: ${{ steps.set-outputs.outputs.IDENTITY_RESOURCE_ID }}
+
 
     steps:
     - name: Checkout
@@ -73,6 +83,25 @@ jobs:
         echo "APP_GATEWAY_NAME=${{ env.APP_GATEWAY_NAME }}"
         echo "IDENTITY_RESOURCE_ID=${{ env.IDENTITY_RESOURCE_ID}}"
         echo "ACR_NAME=${{ env.ACR_NAME}}"
+
+    - name: Save Terraform outputs to file
+      working-directory: aks
+      run: |
+        echo "RESOURCE_GROUP=$(terraform output -raw resource_group_name)" >> tf-outputs.env
+        echo "AKS_CLUSTER_NAME=$(terraform output -raw aks_cluster_name)" >> tf-outputs.env
+        echo "ACR_NAME=$(terraform output -raw azurerm_container_registry)" >> tf-outputs.env
+        echo "APPGW_ID=$(terraform output -raw app_gateway_id)" >> tf-outputs.env
+        echo "IDENTITY_CLIENT_ID=$(terraform output -raw agic_identity_client_id)" >> tf-outputs.env
+        echo "APP_GATEWAY_NAME=$(terraform output -raw app_gateway_name)" >> tf-outputs.env
+        echo "IDENTITY_RESOURCE_ID=$(terraform output -raw identity_resource_id)" >> tf-outputs.env
+
+    - name: Upload Terraform Outputs as Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: tf-outputs
+        path: aks/tf-outputs.env
+
+      
 
     # - name: Upload tfstate
     #   uses: actions/upload-artifact@v4
