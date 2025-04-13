@@ -52,7 +52,7 @@ jobs:
   
     - name: Debug environment values
       run: |
-        echo "AKS_CLUSTER_NAME=$AKS_CLUSTER_NAME"
+        echo "AKS_CLUSTER_NAME=${{ env.RESOURCE_GROUP }}"
         echo "RESOURCE_GROUP=$RESOURCE_GROUP"
         echo "ACR_NAME=$ACR_NAME"
 
