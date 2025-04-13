@@ -158,8 +158,8 @@ jobs:
         # Get AKS credentials
         az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME
     
-        # Add the Helm repo (use China cloud if needed)
-        helm repo add application-gateway-kubernetes-ingress https://appgwingress.blob.core.chinacloudapi.cn/ingress-azure-helm-package/
+        # Add the Helm repo 
+        helm repo add application-gateway-kubernetes-ingress https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/
         helm repo update
     
         # Download the Helm config
