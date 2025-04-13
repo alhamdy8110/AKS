@@ -87,7 +87,7 @@ jobs:
         echo "IDENTITY_RESOURCE_ID=$(terraform output -raw identity_resource_id)" >> tf-outputs.env
 
     - name: Upload Terraform Outputs as Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: tf-outputs
         path: aks/tf-outputs.env
