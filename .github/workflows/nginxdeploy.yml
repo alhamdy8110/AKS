@@ -31,15 +31,18 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v2
 
-    - name: Download tf-outputs artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: tf-outputs
-        path: ./tf-artifact
+    # - name: Download tf-outputs artifact
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: tf-outputs
+    #     path: ./tf-artifact
     
-    - name: Load env variables
+    # - name: Load env variables
+    #   run: |
+    #     cat ./tf-artifact/tf-outputs.env >> $GITHUB_ENV
+    - name: Load outputs
       run: |
-        cat ./tf-artifact/tf-outputs.env >> $GITHUB_ENV
+        cat tf-outputs.env >> $GITHUB_ENV
     
     - name: Azure Login
       uses: azure/login@v2
