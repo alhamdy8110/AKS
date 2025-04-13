@@ -13,14 +13,14 @@ permissions:
   actions: read # Required for GitHub Actions
   checks: write # Required for status checks
 
-env:
-   RESOURCE_GROUP: resource_group_name
-   AKS_CLUSTER_NAME: aks_cluster_name
-   ACR_NAME: azurerm_container_registry
-   APPGW_ID: app_gateway_id
-   IDENTITY_CLIENT_ID: agic_identity_client_id
-   APP_GATEWAY_NAME: app_gateway_name
-   IDENTITY_RESOURCE_ID: identity_resource_id
+# env:
+#    RESOURCE_GROUP: resource_group_name
+#    AKS_CLUSTER_NAME: aks_cluster_name
+#    ACR_NAME: azurerm_container_registry
+#    APPGW_ID: app_gateway_id
+#    IDENTITY_CLIENT_ID: agic_identity_client_id
+#    APP_GATEWAY_NAME: app_gateway_name
+#    IDENTITY_RESOURCE_ID: identity_resource_id
 
 
 jobs:
@@ -41,8 +41,8 @@ jobs:
 
     # - name: Grant aks access to ACR
     #   run: |
-    #     aks_CLIENT_ID=$(az aks show --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} --query "identityProfile.kubeletidentity.clientId" -o tsv)
-    #     ACR_ID=$(az acr show --name ${{ env.ACR_NAME }} --query id -o tsv)
+    #     aks_CLIENT_ID=$(az aks show --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME--query "identityProfile.kubeletidentity.clientId" -o tsv)
+    #     ACR_ID=$(az acr show --name $ACR_NAME --query id -o tsv)
 
     #     echo "Granting AcrPull role to aks kubelet identity..."
     #     az role assignment create \
@@ -52,20 +52,20 @@ jobs:
   
     - name: Attach ACR to aks
       run: |
-        az aks update -n ${{ env.AKS_CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --attach-acr ${{ env.ACR_NAME }}
+        az aks update -n $AKS_CLUSTER_NAME -g $RESOURCE_GROUP --attach-acr $ACR_NAME
   
     - name: Login to ACR
       uses: azure/docker-login@v1
       with:
-        login-server: ${{ env.ACR_NAME }}.azurecr.io
+        login-server: $ACR_NAME.azurecr.io
         username: ${{ secrets.AZURE_CLIENT_ID }} 
         password: ${{ secrets.AZURE_CLIENT_SECRET }} 
 
     - name: Build and push to ACR
       run: |
         docker pull abdulnaser93/my-nginx:latest
-        docker tag abdulnaser93/my-nginx:latest ${{ env.ACR_NAME }}.azurecr.io/my-nginx:latest
-        docker push ${{ env.ACR_NAME }}.azurecr.io/my-nginx:latest
+        docker tag abdulnaser93/my-nginx:latest $ACR_NAME.azurecr.io/my-nginx:latest
+        docker push $ACR_NAME.azurecr.io/my-nginx:latest
 
 
     - name: Set up Kubernetes tools
@@ -82,8 +82,8 @@ jobs:
       id: set-context
       uses: azure/aks-set-context@v3
       with:
-       resource-group: '${{ env.RESOURCE_GROUP }}' 
-       cluster-name: '${{ env.AKS_CLUSTER_NAME }}'
+       resource-group: $RESOURCE_GROUP
+       cluster-name: $AKS_CLUSTER_NAME
        admin: 'false'
        use-kubelogin: 'true' 
 
@@ -121,7 +121,7 @@ jobs:
 
     # - name: Install APG Controller 
     #   run: |
-    #     az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} 
+    #     az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME
 
     #     helm upgrade --install ingress-azure \
     #       --namespace ingress-basic \
@@ -134,7 +134,7 @@ jobs:
     - name: Install AGIC Controller
       run: |
         # Get AKS credentials
-        az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+        az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME
     
         # Add the Helm repo (use China cloud if needed)
         helm repo add application-gateway-kubernetes-ingress https://appgwingress.blob.core.chinacloudapi.cn/ingress-azure-helm-package/
@@ -145,10 +145,10 @@ jobs:
     
         # Update the Helm config with environment variables
         sed -i "s|<subscription-id>|${{ secrets.AZURE_SUBSCRIPTION }}|g" helm-config.yaml
-        sed -i "s|<resource-group-name>|${{ env.RESOURCE_GROUP }}|g" helm-config.yaml
-        sed -i "s|<application-gateway-name>|${{ env.APP_GATEWAY_NAME }}|g" helm-config.yaml
-        sed -i "s|<identity-resource-id>|${{ env.IDENTITY_RESOURCE_ID }}|g" helm-config.yaml
-        sed -i "s|<identity-client-id>|${{ env.IDENTITY_CLIENT_ID }}|g" helm-config.yaml
+        sed -i "s|<resource-group-name>|$RESOURCE_GROUP|g" helm-config.yaml
+        sed -i "s|<application-gateway-name>|$APP_GATEWAY_NAME|g" helm-config.yaml
+        sed -i "s|<identity-resource-id>|$IDENTITY_RESOURCE_ID|g" helm-config.yaml
+        sed -i "s|<identity-client-id>|$IDENTITY_CLIENT_ID|g" helm-config.yaml
         sed -i "s|<watch-namespace>|ingress-basic|g" helm-config.yaml
     
         # Install AGIC using Helm config
