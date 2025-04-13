@@ -31,11 +31,6 @@ resource "azurerm_subnet" "aks_subnet" {
   address_prefixes     = ["10.0.0.0/21"]
 }
 
-data "azurerm_subnet" "kubesubnet" {
-  name                 = var.aks_subnet_name
-  virtual_network_name = azurerm_virtual_network.aks_vnet.name
-  resource_group_name  = azurerm_resource_group.rg.name
-}
 
 
 # User-assigned identity for AKS
@@ -64,7 +59,7 @@ resource "azurerm_user_assigned_identity" "aks" {
     name       = "systempool"
     vm_size    = var.aks_vm_size
     node_count = var.node_count
-    vnet_subnet_id  = azurerm_subnet.kubesubnet.id
+    vnet_subnet_id  = azurerm_subnet.aks_subnet.id
   }
 
   
