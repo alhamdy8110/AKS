@@ -185,7 +185,7 @@ jobs:
         # helm install -f helm-config.yaml ingress-azure ./ingress-azure-1.7.1.tgz --namespace ingress-basic
         # rm helm-config.yaml ingress-azure-1.7.1.tgz
         # Install AGIC from Microsoft Container Registry using the Helm config
-        helm install agic-controller oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
+        helm upgrade --install agic-controller oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
           --version 1.8.1 \
           -f helm-config.yaml \
           --namespace ingress-basic
