@@ -75,7 +75,7 @@ jobs:
         echo "APP_GATEWAY_NAME=${{ env.APP_GATEWAY_NAME }}"
         echo "IDENTITY_RESOURCE_ID=${{ env.IDENTITY_RESOURCE_ID}}"
         echo "ACR_NAME=${{ env.ACR_NAME}}"
-        echo "ACR_NAME=${{ env.IDENTITY_RESOURCE_NAME}}"
+        echo "IDENTITY_RESOURCE_NAME=${{ env.IDENTITY_RESOURCE_NAME}}"
 
     - name: Save Terraform outputs to file
       working-directory: aks

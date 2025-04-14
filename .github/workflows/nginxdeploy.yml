@@ -139,24 +139,11 @@ jobs:
           --force      
 
 
-
-    # - name: Install APG Controller 
-    #   run: |
-    #     az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME
-
-    #     helm upgrade --install ingress-azure \
-    #       --namespace ingress-basic \
-    #       oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
-    #       --set appgw.applicationGatewayID=$APPGW_ID \
-    #       --set armAuth.type=workloadIdentity \
-    #       --set armAuth.identityClientID=$IDENTITY_CLIENT_ID \
-    #       --set rbac.enabled=true \
-    #       --version 1.7.3 
-
-    - name: Install AGIC Controller
+    - name: Set up federation with AKS
       run: |
         echo "Set up federation with AKS OIDC issuer"
-        AKS_OIDC_ISSUER="$(az aks show -n "$AKS_NAME" -g "$RESOURCE_GROUP" --query "oidcIssuerProfile.issuerUrl" -o tsv)"
+        AKS_OIDC_ISSUER="$(az aks show -n ${{ env.AKS_CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --query "oidcIssuerProfile.issuerUrl" -o tsv)"
+        echo "$AKS_OIDC_ISSUER"
         az identity federated-credential create --name "agic" \
             --identity-name "$IDENTITY_RESOURCE_NAME" \
             --resource-group $RESOURCE_GROUP \
@@ -168,6 +155,15 @@ jobs:
       run: |
         # Get AKS credentials
         az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME
+        # on aks cluster with only linux node pools
+        helm upgrade --install ingress-azure \
+          --namespace ingress-basic \
+          oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
+          --set appgw.applicationGatewayID=$APPGW_ID \
+          --set armAuth.type=workloadIdentity \
+          --set armAuth.identityClientID=$IDENTITY_CLIENT_ID \
+          --set rbac.enabled=true \
+          --version 1.7.3
 
 
   

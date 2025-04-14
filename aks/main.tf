@@ -224,3 +224,9 @@ resource "azurerm_subnet" "appgw_subnet" {
   role_definition_name = "Network Contributor"
   principal_id         = data.azurerm_user_assigned_identity.ingress.principal_id
  }
+
+ resource "azurerm_role_assignment" "agic_node_rg_contributor" {
+  scope                = azurerm_kubernetes_cluster.aks.node_resource_group_id
+  role_definition_name = "Contributor"
+  principal_id         = data.azurerm_user_assigned_identity.ingress.principal_id
+}
