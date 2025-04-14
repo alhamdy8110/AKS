@@ -13,7 +13,8 @@ permissions:
   actions: read # Required for GitHub Actions
   checks: write # Required for status checks
 
-# env:
+env:
+  MANAGED_CLUSTER_RESOURCE_GROUP: "MC_${em.AKS_RESOURCE_GROUP}_${AKS_CLUSTER_NAME}_${REGION}"
 #    RESOURCE_GROUP: resource_group_name
 #    AKS_CLUSTER_NAME: aks_cluster_name
 #    ACR_NAME: azurerm_container_registry
@@ -142,7 +143,7 @@ jobs:
     - name: Set up federation with AKS
       run: |
         echo "Set up federation with AKS OIDC issuer"
-        AKS_OIDC_ISSUER="$(az aks show -n ${{ env.AKS_CLUSTER_NAME }} -g MC_rg-aks_aks-cluster_eastus --query "oidcIssuerProfile.issuerUrl" -o tsv)"
+        AKS_OIDC_ISSUER="$(az aks show -n ${{ env.AKS_CLUSTER_NAME }} -g ${{ env.MANAGED_CLUSTER_RESOURCE_GROUP }}  --query "oidcIssuerProfile.issuerUrl" -o tsv)"
         echo "$AKS_OIDC_ISSUER"
         az identity federated-credential create --name "agic" \
             --identity-name "$IDENTITY_RESOURCE_NAME" \
