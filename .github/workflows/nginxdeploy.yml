@@ -142,7 +142,7 @@ jobs:
     - name: Set up federation with AKS
       run: |
         echo "Set up federation with AKS OIDC issuer"
-        AKS_OIDC_ISSUER="$(az aks show -n ${{ env.AKS_CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --query "oidcIssuerProfile.issuerUrl" -o tsv)"
+        AKS_OIDC_ISSUER="$(az aks show -n ${{ env.AKS_CLUSTER_NAME }} -g MC_rg-aks_aks-cluster_eastus --query "oidcIssuerProfile.issuerUrl" -o tsv)"
         echo "$AKS_OIDC_ISSUER"
         az identity federated-credential create --name "agic" \
             --identity-name "$IDENTITY_RESOURCE_NAME" \
