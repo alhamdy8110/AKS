@@ -155,6 +155,14 @@ jobs:
       run: |
         # Get AKS credentials
         az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME
+        kubectl annotate ingressclass azure-application-gateway \
+        meta.helm.sh/release-name=ingress-azure \
+        meta.helm.sh/release-namespace=ingress-basic --overwrite
+
+        kubectl label ingressclass azure-application-gateway \
+        app.kubernetes.io/managed-by=Helm --overwrite
+
+
         # on aks cluster with only linux node pools
         helm upgrade --install ingress-azure \
           --namespace ingress-basic \
