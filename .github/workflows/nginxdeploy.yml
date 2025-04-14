@@ -189,6 +189,8 @@ jobs:
           --version 1.8.1 \
           -f helm-config.yaml \
           --namespace ingress-basic
+          --set ingressClassResource.create=false
+
 
 
 
