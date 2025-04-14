@@ -148,7 +148,7 @@ jobs:
             --identity-name "$IDENTITY_RESOURCE_NAME" \
             --resource-group "$MANAGED_CLUSTER_RESOURCE_GROUP" \
             --issuer "$AKS_OIDC_ISSUER" \
-            --subject "system:serviceaccount:default:ingress-azure"
+            --subject "system:serviceaccount:ingress-basic:ingress-azure"
 
 
     - name: Install AGIC Controller
