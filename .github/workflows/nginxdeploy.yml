@@ -142,11 +142,11 @@ jobs:
     - name: Set up federation with AKS
       run: |
         echo "Set up federation with AKS OIDC issuer"
-        AKS_OIDC_ISSUER="$(az aks show -n ${{ env.AKS_CLUSTER_NAME }} -g ${{ env.MANAGED_CLUSTER_RESOURCE_GROUP }}  --query "oidcIssuerProfile.issuerUrl" -o tsv)"
-        echo "$AKS_OIDC_ISSUER"
+        AKS_OIDC_ISSUER="$(az aks show -n ${{ env.AKS_CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --query "oidcIssuerProfile.issuerUrl" -o tsv)"
+        echo "OIDC Issuer URL: $AKS_OIDC_ISSUER"
         az identity federated-credential create --name "agic" \
             --identity-name "$IDENTITY_RESOURCE_NAME" \
-            --resource-group $RESOURCE_GROUP \
+            --resource-group "$MANAGED_CLUSTER_RESOURCE_GROUP" \
             --issuer "$AKS_OIDC_ISSUER" \
             --subject "system:serviceaccount:default:ingress-azure"
 
