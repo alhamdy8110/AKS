@@ -13,8 +13,7 @@ permissions:
   actions: read # Required for GitHub Actions
   checks: write # Required for status checks
 
-env:
-  MANAGED_CLUSTER_RESOURCE_GROUP: "MC_${em.AKS_RESOURCE_GROUP}_${AKS_CLUSTER_NAME}_${REGION}"
+# env:
 #    RESOURCE_GROUP: resource_group_name
 #    AKS_CLUSTER_NAME: aks_cluster_name
 #    ACR_NAME: azurerm_container_registry
