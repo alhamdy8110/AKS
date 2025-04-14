@@ -166,6 +166,8 @@ jobs:
         # helm repo add application-gateway-kubernetes-ingress https://azure.github.io/application-gateway-kubernetes-ingress/helm/
         # helm repo update
     
+        # Install Azure AD Pod Identity CRDs 
+        kubectl apply -f https://raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml
         # Download the Helm config
         wget https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml -O helm-config.yaml
         # helm install agic-controller oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure --version 1.8.1 -f helm-config.yaml
@@ -189,7 +191,7 @@ jobs:
           --namespace ingress-basic
 
 
-          
+
         rm helm-config.yaml
 
 
