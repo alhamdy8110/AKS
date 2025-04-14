@@ -50,6 +50,9 @@ resource "azurerm_user_assigned_identity" "aks" {
    role_based_access_control_enabled = var.aks_enable_rbac
    sku_tier                          = var.aks_sku_tier
 
+   oidc_issuer_enabled       = true
+   workload_identity_enabled = true
+
   identity {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.aks.id]

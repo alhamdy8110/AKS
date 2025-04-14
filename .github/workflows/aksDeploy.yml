@@ -64,6 +64,7 @@ jobs:
         echo "APP_GATEWAY_NAME=$(terraform output -raw app_gateway_name)" >> $GITHUB_ENV
         echo "IDENTITY_RESOURCE_ID=$(terraform output -raw identity_resource_id)" >> $GITHUB_ENV
         echo "ACR_NAME=$(terraform output -raw azurerm_container_registry)" >> $GITHUB_ENV
+        echo "IDENTITY_RESOURCE_NAME=$(terraform output -raw agic_identity_client_name)" >> $GITHUB_ENV
 
     - name: Debug output
       run: |
@@ -74,6 +75,7 @@ jobs:
         echo "APP_GATEWAY_NAME=${{ env.APP_GATEWAY_NAME }}"
         echo "IDENTITY_RESOURCE_ID=${{ env.IDENTITY_RESOURCE_ID}}"
         echo "ACR_NAME=${{ env.ACR_NAME}}"
+        echo "ACR_NAME=${{ env.IDENTITY_RESOURCE_NAME}}"
 
     - name: Save Terraform outputs to file
       working-directory: aks
@@ -85,6 +87,7 @@ jobs:
         echo "IDENTITY_CLIENT_ID=$(terraform output -raw agic_identity_client_id)" >> tf-outputs.env
         echo "APP_GATEWAY_NAME=$(terraform output -raw app_gateway_name)" >> tf-outputs.env
         echo "IDENTITY_RESOURCE_ID=$(terraform output -raw identity_resource_id)" >> tf-outputs.env
+        echo "IDENTITY_RESOURCE_NAME=$(terraform output -raw agic_identity_client_name)" >> tf-outputs.env
 
     # - name: Upload Terraform Outputs as Artifact
     #   uses: actions/upload-artifact@v4

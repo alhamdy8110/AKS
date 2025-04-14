@@ -23,6 +23,11 @@ output "app_gateway_id" {
    value       = data.azurerm_user_assigned_identity.ingress.client_id
  }
 
+  output "agic_identity_client_name" {
+   description = "The Client ID of the AGIC User Assigned Managed Identity"
+   value       = data.azurerm_user_assigned_identity.ingress.name
+ }
+
  output "identity_name" {
    value = azurerm_user_assigned_identity.aks.name
  }
