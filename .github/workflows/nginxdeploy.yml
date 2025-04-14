@@ -188,7 +188,7 @@ jobs:
         helm upgrade --install agic-controller oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
           --version 1.8.1 \
           -f helm-config.yaml \
-          --namespace ingress-basic
+          --namespace ingress-basic \
           --set ingressClassResource.create=false
 
 
