@@ -11,7 +11,15 @@ spec:
     privateKeySecretRef:
       name: letsencrypt
     solvers:
-      - http01:
-          ingress:
-            # class: nginx
-            class: azure-application-gateway
+      - dns01:
+          azureDNS:
+            subscriptionID: 37c05aa5-7335-4ed0-a600-dd4247abad87
+            resourceGroupName: rg-aks
+            hostedZoneName: elpatrontitan.com
+            environment: AzurePublicCloud
+            managedIdentity:
+              clientID: 5d25fe3f-eb2a-4439-ad7d-a5fb1d21eaed
+      # - http01:
+      #     ingress:
+      #       # class: nginx
+      #       class: azure-application-gateway
