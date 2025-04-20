@@ -14,27 +14,11 @@ spec:
       labels:
         app: nginx-hello-world
     spec:
-      # initContainers:
-      # - name: copy-content
-      #   image: acraksclusternginx.azurecr.io/my-nginx:latest
-      #   command: ["/bin/sh", "-c"]
-      #   args:
-      #     - |
-      #       if [ ! -f /mnt/index.html ]; then
-      #         cp -r /usr/share/nginx/html/* /mnt/;
-      #         echo "✅ Copied files to PVC";
-      #       else
-      #         echo "ℹ️ Files already exist in PVC, skipping copy";
-      #       fi
-      #   volumeMounts:
-      #   - name: html-content
-      #     mountPath: /mnt
       containers:
       - name: nginx
         image: acraksclusternginx.azurecr.io/my-nginx:latest
         ports:
         - containerPort: 80
-        # - containerPort: 443
       #   volumeMounts:
       #   - name: html-content
       #     mountPath: /usr/share/nginx/html
@@ -52,13 +36,9 @@ spec:
   selector:
     app: nginx-hello-world
   ports:
-    - name: http  # Added name for port 80
+    - name: http 
       protocol: TCP
       port: 80
       targetPort: 80
-    # - name: https  # Added name for port 443
-    #   protocol: TCP
-    #   port: 443
-    #   targetPort: 443
   type: ClusterIP
 

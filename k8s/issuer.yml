@@ -18,7 +18,7 @@ spec:
             hostedZoneName: elpatrontitan.com
             environment: AzurePublicCloud
             managedIdentity:
-              clientID: 5d25fe3f-eb2a-4439-ad7d-a5fb1d21eaed
+              clientID: e552c208-942d-49ac-9d91-d0f28beb65c5
       # - http01:
       #     ingress:
       #       # class: nginx
