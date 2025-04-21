@@ -38,13 +38,13 @@ jobs:
       run: terraform destroy -auto-approve
 
 
-    - name: Commit and Push Updated Terraform State
-      run: |
-        git config --global user.email "github-actions@github.com"
-        git config --global user.name "GitHub Actions"
-        git add aks/terraform.tfstate
-        git commit -m "Update Terraform state after destroy"
-        git push
+    # - name: Commit and Push Updated Terraform State
+    #   run: |
+    #     git config --global user.email "github-actions@github.com"
+    #     git config --global user.name "GitHub Actions"
+    #     git add aks/terraform.tfstate
+    #     git commit -m "Update Terraform state after destroy"
+    #     git push
 
     # - name: List downloaded files
     #   run: ls -la aks
