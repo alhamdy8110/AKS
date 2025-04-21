@@ -1,10 +1,11 @@
 #https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-terraform?pivots=development-environment-azure-cli
 
- # Locals block for hardcoded names
+
 data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
 }
  
+  # Locals block for hardcoded names
  locals {
    backend_address_pool_name      = "${azurerm_virtual_network.aks_vnet.name}-beap"
    frontend_port_name             = "${azurerm_virtual_network.aks_vnet.name}-feport"
@@ -19,13 +20,14 @@ data "azurerm_resource_group" "rg" {
 resource "azurerm_virtual_network" "aks_vnet" {
   name                = var.virtual_network_name_aks
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+
 }
 
 resource "azurerm_subnet" "aks_subnet" {
   name                 = var.aks_subnet_name
-  resource_group_name  = azurerm_resource_group.rg.name
+  resource_group_name = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.aks_vnet.name
   address_prefixes     = ["10.0.0.0/21"]
 }
@@ -35,15 +37,15 @@ resource "azurerm_subnet" "aks_subnet" {
 # User-assigned identity for AKS
 resource "azurerm_user_assigned_identity" "aks" {
   name                = "${var.aks_cluster_name}-identity"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
 }
 
  # aks cluster
  resource "azurerm_kubernetes_cluster" "aks" {
    name                              = var.aks_cluster_name
-   location                          = azurerm_resource_group.rg.location
-   resource_group_name               = azurerm_resource_group.rg.name
+   location                          = data.azurerm_resource_group.rg.location
+   resource_group_name               = data.azurerm_resource_group.rg.name
    dns_prefix                        = "${var.aks_cluster_name}-dns"
    private_cluster_enabled           = var.aks_private_cluster
    role_based_access_control_enabled = var.aks_enable_rbac
@@ -97,8 +99,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
 
 resource "azurerm_container_registry" "acr_name" {
   name                = var.acrname
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
   sku                 = "Basic"
   admin_enabled       = false
 }
@@ -106,12 +108,12 @@ resource "azurerm_container_registry" "acr_name" {
 
 resource "azurerm_dns_zone" "dns-zone" {
   name                = var.dns_zone_name
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = data.azurerm_resource_group.rg.name
 }
 
 resource "azurerm_subnet" "appgw_subnet" {
    name                 = var.appgw_subnet_name
-   resource_group_name  = azurerm_resource_group.rg.name
+   resource_group_name  = data.azurerm_resource_group.rg.name
    virtual_network_name = azurerm_virtual_network.aks_vnet.name
    address_prefixes     = ["10.0.8.0/24"]
  }
@@ -119,8 +121,8 @@ resource "azurerm_subnet" "appgw_subnet" {
  
  resource "azurerm_public_ip" "appgw_public_ip" {
    name                = "appgw-public-ip"
-   location            = azurerm_resource_group.rg.location
-   resource_group_name = azurerm_resource_group.rg.name
+   location            = data.azurerm_resource_group.rg.location
+   resource_group_name = data.azurerm_resource_group.rg.name
    allocation_method   = "Static"
    sku                 = "Standard"
    zones               = ["1"] 
@@ -128,8 +130,8 @@ resource "azurerm_subnet" "appgw_subnet" {
  
  resource "azurerm_application_gateway" "appgw" {
    name                = var.app_gateway_name
-   location            = azurerm_resource_group.rg.location
-   resource_group_name = azurerm_resource_group.rg.name
+   location            = data.azurerm_resource_group.rg.location
+   resource_group_name = data.azurerm_resource_group.rg.name
  
    sku {
      name     = var.app_gateway_tier
@@ -207,7 +209,7 @@ resource "azurerm_subnet" "appgw_subnet" {
 
 
  resource "azurerm_role_assignment" "agic_rg_reader" {
-  scope                = azurerm_resource_group.rg.id
+  scope                = data.azurerm_resource_group.rg.id
   role_definition_name = "Reader"
   principal_id         = data.azurerm_user_assigned_identity.ingress.principal_id
 }
