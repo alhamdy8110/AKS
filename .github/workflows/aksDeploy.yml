@@ -2,6 +2,7 @@
 #https://learn.microsoft.com/en-us/devops/deliver/iac-github-actions#deploy-with-github-actions
 #https://github.com/Azure/actions-workflow-samples?tab=readme-ov-file
 #https://azure.github.io/actions/
+#https://learn.microsoft.com/en-us/azure/developer/terraform/store-state-in-azure-storage?tabs=azure-cli
 
 name: 'aks Deployment'
 
@@ -29,6 +30,14 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform Init for backend setup
+      working-directory: backend-setup
+      run: terraform init
+    
+    - name: Terraform Apply backend setup
+      working-directory: backend-setup
+      run: terraform apply -auto-approve
 
     - name: Terraform Init
       working-directory: aks

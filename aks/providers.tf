@@ -19,13 +19,6 @@ terraform {
       version = "0.9.1"
     }
   }
-
-    backend "azurerm" {
-      resource_group_name  = "rg-aks"
-      storage_account_name = "akstfstategithubaction"
-      container_name       = "tfstate"
-      key                  = "terraform.tfstate"
-  }
 }
 
 provider "azurerm" {

@@ -230,4 +230,3 @@ resource "azurerm_subnet" "appgw_subnet" {
   role_definition_name = "Contributor"
   principal_id         = data.azurerm_user_assigned_identity.ingress.principal_id
 }
-
