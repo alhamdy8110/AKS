@@ -29,13 +29,27 @@ jobs:
       working-directory: aks
       run: terraform init
 
-    - name: Pull Latest Terraform State
-      run: |
-        git pull origin main
+    # - name: Pull Latest Terraform State
+    #   run: |
+    #     git pull origin main
 
     - name: Terraform Destroy
       working-directory: aks
       run: terraform destroy -auto-approve
+
+    - name: Delete rg-aks
+      run: |
+        az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+        az group delete --name rg-aks --yes --no-wait
+
+    - name: Remove Terraform output file
+      run: |
+        git config user.email "github-actions@github.com"
+        git config user.name "GitHub Actions"
+        git rm -f tf-outputs.env || true
+        git commit -m "Remove tf outputs after destroy" || true
+        git push
+
 
 
     # - name: Commit and Push Updated Terraform State
