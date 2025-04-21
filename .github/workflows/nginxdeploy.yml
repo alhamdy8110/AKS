@@ -13,14 +13,6 @@ permissions:
   actions: read # Required for GitHub Actions
   checks: write # Required for status checks
 
-# env:
-#    RESOURCE_GROUP: resource_group_name
-#    AKS_CLUSTER_NAME: aks_cluster_name
-#    ACR_NAME: azurerm_container_registry
-#    APPGW_ID: app_gateway_id
-#    IDENTITY_CLIENT_ID: agic_identity_client_id
-#    APP_GATEWAY_NAME: app_gateway_name
-#    IDENTITY_RESOURCE_ID: identity_resource_id
 
 
 jobs:
@@ -31,15 +23,7 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v2
 
-    # - name: Download tf-outputs artifact
-    #   uses: actions/download-artifact@v4
-    #   with:
-    #     name: tf-outputs
-    #     path: ./tf-artifact
-    
-    # - name: Load env variables
-    #   run: |
-    #     cat ./tf-artifact/tf-outputs.env >> $GITHUB_ENV
+
     - name: Load outputs
       run: |
         cat tf-outputs.env >> $GITHUB_ENV
@@ -50,23 +34,6 @@ jobs:
         creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
         enable-AzPSSession: true
 
-    # - name: Grant aks access to ACR
-    #   run: |
-    #     aks_CLIENT_ID=$(az aks show --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME--query "identityProfile.kubeletidentity.clientId" -o tsv)
-    #     ACR_ID=$(az acr show --name $ACR_NAME --query id -o tsv)
-
-    #     echo "Granting AcrPull role to aks kubelet identity..."
-    #     az role assignment create \
-    #       --assignee $aks_CLIENT_ID \
-    #       --role "AcrPull" \
-    #       --scope $ACR_ID
-  
-    # - name: Debug environment values
-    #   run: |
-    #     echo "AKS_CLUSTER_NAME=$AKS_CLUSTER_NAME"
-    #     echo "RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}"
-    #     echo "ACR_NAME=$ACR_NAME"
-
     - name: Attach ACR to aks
       run: |
         az aks update -n $AKS_CLUSTER_NAME -g $RESOURCE_GROUP --attach-acr $ACR_NAME
@@ -75,13 +42,6 @@ jobs:
       run: |
         az acr login --name $ACR_NAME
 
-  
-    # - name: Login to ACR
-    #   uses: azure/docker-login@v1
-    #   with:
-    #     login-server: $ACR_NAME.azurecr.io
-    #     username: ${{ secrets.AZURE_CLIENT_ID }} 
-    #     password: ${{ secrets.AZURE_CLIENT_SECRET }}
 
     - name: Build and push to ACR
       run: |

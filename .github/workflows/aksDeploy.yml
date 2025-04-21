@@ -55,13 +55,6 @@ jobs:
       working-directory: aks
       run: terraform apply -auto-approve
 
-    # - name: Commit and Push Terraform State
-    #   run: |
-    #     git config --global user.email "github-actions@github.com"
-    #     git config --global user.name "GitHub Actions"
-    #     git add aks/terraform.tfstate
-    #     git commit -m "Update Terraform state"
-    #     git push
 
     - name: Export Terraform Outputs
       id: tf_outputs
@@ -101,12 +94,6 @@ jobs:
         echo "IDENTITY_RESOURCE_ID=$(terraform output -raw identity_resource_id)" >> tf-outputs.env
         echo "IDENTITY_RESOURCE_NAME=$(terraform output -raw agic_identity_client_name)" >> tf-outputs.env
         echo "MANAGED_CLUSTER_RESOURCE_GROUP=MC_$(terraform output -raw resource_group_name)_$(terraform output -raw aks_cluster_name)_eastus" >> tf-outputs.env
-
-    # - name: Upload Terraform Outputs as Artifact
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: tf-outputs
-    #     path: aks/tf-outputs.env
 
     - name: Save Terraform outputs to repo
       run: |
