@@ -1,9 +1,8 @@
 #https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-terraform?pivots=development-environment-azure-cli
 
  # Locals block for hardcoded names
-  resource "azurerm_resource_group" "rg" {
-  location = var.resource_group_location
-  name     = "${var.resource_group_name}"
+data "azurerm_resource_group" "rg" {
+  name = var.resource_group_name
 }
  
  locals {
